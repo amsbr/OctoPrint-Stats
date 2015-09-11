@@ -3,35 +3,46 @@ $(function() {
 
     function StatsViewModel(parameters) {
         var self = this;
+        self.loginState = parameters[0];
+        self.settings = parameters[1];
 
-        //self.testV = ko.observable();
-        //self.testV('teste Model');
+        self.pollingEnabled = false;
+        self.pollingTimeoutId = undefined;
 
-        //self.loginState = parameters[0];
-        //self.settings = parameters[1];
+        window.statFull = undefined;
 
-        // this will hold the URL currently displayed by the iframe
-        //self.currentUrl = ko.observable();
+        self.onAfterTabChange = function(current, previous) {
+            if (current != "#tab_plugin_stats") {
+                return;
+            }
 
-        // this will hold the URL entered in the text field
-        //self.newUrl = ko.observable();
-
-        // this will be called when the user clicks the "Go" button and set the iframe's URL to the entered URL
-        self.goToUrl = function() {
-            //self.currentUrl(self.newUrl());
+            self.requestData();
         };
 
-        // This will get called before the HelloWorldViewModel gets bound to the DOM, but after its depedencies have
-        // already been initialized. It is especially guaranteed that this method gets called _after_ the settings
-        // have been retrieved from the OctoPrint backend and thus the SettingsViewModel been properly populated.
-        self.onAfterTabChange = function() {
+        self.fromResponse = function (response) {
             // Full Stats
-            //var ctx = document.getElementById("canvas_fullstat").getContext("2d");
-          	//window.statFull = new Chart(ctx).Bar(self.fullDataset, {
-          	//    responsive : true
-          	//});
+            self.setFullChart(response.fullDataset);
 
-        }
+            if (self.pollingEnabled) {
+                self.pollingTimeoutId = setTimeout(function() {
+                    self.requestData();
+                }, 30000)
+            }
+        };
+
+        self.requestData = function () {
+            if (self.pollingTimeoutId != undefined) {
+                clearTimeout(self.pollingTimeoutId);
+                self.pollingTimeoutId = undefined;
+            }
+
+            $.ajax({
+                url: API_BASEURL + "plugin/stats",
+                type: "GET",
+                dataType: "json",
+                success: self.fromResponse
+            });
+        };
 
         self.onDataUpdaterPluginMessage = function(plugin, message) {
             if (plugin != 'stats')
@@ -50,76 +61,77 @@ $(function() {
                   strokeColor : "rgba(46,204,113,0.8)",
                   highlightFill: "rgba(46,204,113,0.75)",
                   highlightStroke: "rgba(46,204,113,1)",
-                  data : ds.connected
+                  data : ds.connected,
+                  label : "Connection"
                 },// Uploads
                 {
                   fillColor : "rgba(52,152,219,0.5)",
                   strokeColor : "rgba(52,152,219,0.8)",
                   highlightFill: "rgba(52,152,219,0.75)",
                   highlightStroke: "rgba(52,152,219,1)",
-                  data : ds.upload
+                  data : ds.upload,
+                  label : "Upload"
                 },// Prints
                 {
                   fillColor : "rgba(41,128,185,0.5)",
                   strokeColor : "rgba(41,128,185,0.8)",
                   highlightFill: "rgba(41,128,185,0.75)",
                   highlightStroke: "rgba(41,128,185,1)",
-                  data : ds.print_started
+                  data : ds.print_started,
+                  label : "Print"
                 },// Dones
                 {
                   fillColor : "rgba(26,188,156,0.5)",
                   strokeColor : "rgba(26,188,156,0.8)",
                   highlightFill: "rgba(26,188,156,0.75)",
                   highlightStroke: "rgba(26,188,156,1)",
-                  data : ds.print_done
+                  data : ds.print_done,
+                  label : "Print complete"
                 },// Failed
                 {
                   fillColor : "rgba(231,76,60,0.5)",
                   strokeColor : "rgba(231,76,60,0.8)",
                   highlightFill: "rgba(231,76,60,0.75)",
                   highlightStroke: "rgba(231,76,60,1)",
-                  data : ds.print_failed
+                  data : ds.print_failed,
+                  label : "Print failed"
                 },// Cancelled
                 {
                   fillColor : "rgba(189,195,199,0.5)",
                   strokeColor : "rgba(189,195,199,0.8)",
                   highlightFill: "rgba(189,195,199,0.75)",
                   highlightStroke: "rgba(189,195,199,1)",
-                  data : ds.print_cancelled
+                  data : ds.print_cancelled,
+                  label : "Print cancelled"
                 },// Error
                 {
                   fillColor : "rgba(241,196,15,0.5)",
                   strokeColor : "rgba(241,196,15,0.8)",
                   highlightFill: "rgba(241,196,15,0.75)",
                   highlightStroke: "rgba(241,196,15,1)",
-                  data : ds.print_cancelled
+                  data : ds.error,
+                  label : "Error"
                 }
               ]
             }
 
-            printObject(self.statfull);
-            printObject(ds);
             var ctx = document.getElementById("canvas_fullstat").getContext("2d");
+            if (window.statFull != undefined)
+                window.statFull.clear();
+
             window.statFull = new Chart(ctx).Bar(self.statfull, {
-              responsive : true
+              responsive : true,
+              legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].fillColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
             });
 
-        }
+            document.getElementById("legend_full").innerHTML = window.statFull.generateLegend();
+        };
 
     }
 
-    // This is how our plugin registers itself with the application, by adding some configuration information to
-    // the global variable ADDITIONAL_VIEWMODELS
     ADDITIONAL_VIEWMODELS.push([
-        // This is the constructor to call for instantiating the plugin
         StatsViewModel,
-
-        // This is a list of dependencies to inject into the plugin, the order which you request here is the order
-        // in which the dependencies will be injected into your view model upon instantiation via the parameters
-        // argument
         ["loginStateViewModel", "settingsViewModel"],
-
-        // Finally, this is the list of all elements we want this view model to be bound to.
         [document.getElementById("tab_plugin_stats")]
     ]);
 });
