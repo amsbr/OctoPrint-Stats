@@ -11,6 +11,7 @@ from __future__ import absolute_import
 import octoprint.plugin
 import octoprint.events
 
+from flask import jsonify, make_response
 import os.path
 import datetime
 import calendar
@@ -127,6 +128,7 @@ class StatsDB:
 class StatsPlugin(octoprint.plugin.EventHandlerPlugin,
                   octoprint.plugin.StartupPlugin,
                   octoprint.plugin.AssetPlugin,
+                  octoprint.plugin.SimpleApiPlugin,
                   octoprint.plugin.TemplatePlugin,
                   octoprint.plugin.SettingsPlugin):
 
@@ -145,12 +147,42 @@ class StatsPlugin(octoprint.plugin.EventHandlerPlugin,
             dict(type="settings", custom_bindings=False)
         ]
 
+    #def get_template_vars(self):
+    #    self.refreshFull()
+    #    return dict(month=self.month)
+
+    ##~~ SimpleApiPlugin API
+
+    def get_api_commands(self):
+        return dict(
+            test1=[],
+            test2=[]
+        )
+
+    def is_api_adminonly(self):
+        return False
+
+    def on_api_get(self, request):
+        self.refreshFull();
+
+        return jsonify(dict(
+            fullDataset=self.fullDataset
+        ))
+
+    def on_api_command(self, command, data):
+        if command == "test":
+            return jsonify(teste="True")
+
+    ##~~ AssetPlugin API
+
     def get_assets(self):
         return dict(
+            css=["css/Chart.css"],
             js=["js/stats.js", "js/Chart.js"]
         )
 
     def refreshFull(self):
+        self._logger.debug("Printer Stats - RefreshFull")
         sql = "SELECT month, connected, disconnected, upload, print_started, print_done, print_failed, print_cancelled, print_paused, print_resumed, error FROM fullstat LIMIT 3"
         rows = self.statDB.query(sql)
         month = list()
@@ -169,7 +201,7 @@ class StatsPlugin(octoprint.plugin.EventHandlerPlugin,
             mon = row[0]
             monName = calendar.month_name[int(mon[4:6])]
 
-            month.append(monName[0:3])
+            month.append(monName)
             connected.append(int(row[1]))
             disconnected.append(int(row[2]))
             upload.append(int(row[3]))
@@ -185,6 +217,8 @@ class StatsPlugin(octoprint.plugin.EventHandlerPlugin,
             'upload': upload, 'print_started': print_started, 'print_done': print_done, 'print_failed': print_failed,
             'print_cancelled': print_cancelled, 'print_paused': print_paused, 'print_resumed': print_resumed, 'error': error}
         self._plugin_manager.send_plugin_message(self._identifier, dict(fullDataset=self.fullDataset))
+        self._logger.debug("Printer Stats - Dataset")
+        self._logger.debug(self.fullDataset)
 
 
     def on_event(self, event, payload):
