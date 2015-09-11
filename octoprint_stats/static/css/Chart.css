@@ -1,0 +1,20 @@
+.chart-legend li span{
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    margin-left: 5px;
+}
+
+.chart-legend li {
+    line-height: 1.5em;
+    float: left;
+    display: table-cell;
+    width: 33.333%;
+}
+
+.chart-legend ul {
+    display: table;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
