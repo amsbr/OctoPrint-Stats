@@ -1,3 +1,49 @@
-<h1>{{ _('Printer Statistics') }}</h1>
-<canvas id="canvas_fullstat" class="chart" height="350" width="600"></canvas>
-<div id="legend_full" class="chart-legend" width="600"></div>
+<table cellspacing="0" cellpadding="0" width="100%">
+  <tr>
+    <td colspan="2">
+      <h1>{{ _('Printer Statistics') }}</h1>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <canvas id="canvas_fullstat" class="chart" height="300" width="600"></canvas>
+      <div id="legend_full" class="chart-legend" width="600"></div>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <h1>{{ _('Per Hour') }}</h1>
+    </td>
+    <td align="center">
+      <h1>{{ _('Prints') }}</h1>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <canvas id="canvas_hourlystat" class="chart" height="300" width="300"></canvas>
+      <div id="legend_hour" class="chart-midlegend" width="300"></div>
+    </td>
+    <td>
+      <canvas id="canvas_printstat" class="chart" height="300" width="300"></canvas>
+      <div id="legend_print" class="chart-midlegend" width="300"></div>
+    </td>
+  </tr>
+</table>
+<br>
+<table cellspacing="0" cellpadding="0" width="100%">
+  <tr>
+    <td colspan="2">
+      <h1>{{ _('Power Usage') }}</h1>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <canvas id="canvas_dkwhstat" class="chart" height="300" width="300"></canvas>
+      <div id="legend_dkwh" class="chart-midlegend" width="300"></div>
+    </td>
+    <td>
+      <canvas id="canvas_mkwhstat" class="chart" height="300" width="300"></canvas>
+      <div id="legend_mkwh" class="chart-midlegend" width="300"></div>
+    </td>
+  </tr>
+</table>
