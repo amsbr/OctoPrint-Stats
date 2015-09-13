@@ -1,8 +1,40 @@
+<h4>{{ _('Power usage') }}</h4>
+Specify the consumption of your printer in watts.<br />
 <form class="form-horizontal">
     <div class="control-group">
-        <label class="control-label">{{ _('URL') }}</label>
+        <label class="control-label">{{ _('PCB Heatbed') }}</label>
         <div class="controls">
-            <input type="text" class="input-block-level" data-bind="value: settings.plugins.stats.url">
+            <div class="input-append">
+                <input type="number" step="any" min="0" class="input-mini text-right" data-bind="value: settings.plugins.stats.pcbheatbed" id="stats_pcbheatbed">
+                <span class="add-on">watts</span>
+            </div>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">{{ _('Hotend') }}</label>
+        <div class="controls">
+            <div class="input-append">
+                <input type="number" step="any" min="0" class="input-mini text-right" data-bind="value: settings.plugins.stats.hotend" id="stats_hotend">
+                <span class="add-on">watts</span>
+            </div>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">{{ _('Stepper motors') }}</label>
+        <div class="controls">
+            <div class="input-append">
+                <input type="number" step="any" min="0" class="input-mini text-right" data-bind="value: settings.plugins.stats.steppermotors" id="stats_steppermotors">
+                <span class="add-on">watts</span>
+            </div>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">{{ _('Cooling fans and electronics') }}</label>
+        <div class="controls">
+            <div class="input-append">
+                <input type="number" step="any" min="0" class="input-mini text-right" data-bind="value: settings.plugins.stats.eletronics" id="stats_eletronics">
+                <span class="add-on">watts</span>
+            </div>
         </div>
     </div>
 </form>
