@@ -1,17 +1,10 @@
 # OctoPrint-Stats
 
-**TODO:** Describe what your plugin does.
+This plugin is designed to show statistics of your printer and estimate power usage in kWh.
 
 ## Setup
 
 Install via the bundled [Plugin Manager](https://github.com/foosel/OctoPrint/wiki/Plugin:-Plugin-Manager)
 or manually using this URL:
 
-    https://github.com/you/OctoPrint-Stats/archive/master.zip
-
-**TODO:** Describe how to install your plugin, if more needs to be done than just installing it via pip or through
-the plugin manager.
-
-## Configuration
-
-**TODO:** Describe your plugin's configuration options (if any).
+    https://github.com/amsbr/OctoPrint-Stats/archive/master.zip
