@@ -4,6 +4,7 @@
     height: 20px;
     margin-right: 5px;
     margin-left: 5px;
+    white-space: nowrap;
 }
 
 .chart-legend li {
@@ -11,9 +12,35 @@
     float: left;
     display: table-cell;
     width: 33.333%;
+    white-space: nowrap;
 }
 
 .chart-legend ul {
+    display: table;
+    width: 100%;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.chart-midlegend li span{
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    margin-left: 5px;
+    white-space: nowrap;
+}
+
+.chart-midlegend li {
+    line-height: 1.5em;
+    float: left;
+    display: table-cell;
+    width: 50%;
+    white-space: nowrap;
+}
+
+.chart-midlegend ul {
+    width: 100%;
     display: table;
     margin-bottom: 20px;
     overflow: hidden;
