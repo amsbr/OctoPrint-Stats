@@ -41,14 +41,18 @@ class StatsDB:
                         SELECT
                           strftime('%Y%m', event_time) month,
                           COUNT(event_time) connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
-                        FROM
-                          connected
+                            FROM
+                              connected
+                            GROUP BY 
+                                strftime('%Y%m', event_time)
                         UNION
                         SELECT
                           strftime('%Y%m', event_time) month,
                           0 connected, COUNT(event_time) disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
-                        FROM
-                          disconnected
+                            FROM
+                              disconnected
+                            GROUP BY 
+                                strftime('%Y%m', event_time)
                         UNION
                         SELECT
                           strftime('%Y%m', event_time) month,
@@ -59,44 +63,58 @@ class StatsDB:
                         SELECT
                           strftime('%Y%m', event_time) month,
                           0 connected, 0 disconnected, 0 upload, COUNT(event_time) print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
-                        FROM
-                          print_started
+                            FROM
+                              print_started
+                          GROUP BY 
+                                strftime('%Y%m', event_time)
                         UNION
                         SELECT
                           strftime('%Y%m', event_time) month,
                           0 connected, 0 disconnected, 0 upload, 0 print_started, COUNT(event_time) print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
-                        FROM
-                          print_cancelled
+                            FROM
+                              print_cancelled
+                            GROUP BY 
+                                strftime('%Y%m', event_time)  
                         UNION
                         SELECT
                           strftime('%Y%m', event_time) month,
                           0 connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, COUNT(event_time) print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
-                        FROM
-                          print_done
+                            FROM
+                              print_done
+                            GROUP BY 
+                                strftime('%Y%m', event_time)
                         UNION
                         SELECT
                           strftime('%Y%m', event_time) month,
                           0 connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, COUNT(event_time) print_failed, 0 print_paused, 0 print_resumed, 0 error
-                        FROM
-                          print_failed
+                            FROM
+                              print_failed
+                            GROUP BY 
+                                strftime('%Y%m', event_time)
                         UNION
                         SELECT
                           strftime('%Y%m', event_time) month,
                           0 connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, 0 print_failed, COUNT(event_time) print_paused, 0 print_resumed, 0 error
-                        FROM
-                          print_paused
+                            FROM
+                              print_paused
+                            GROUP BY 
+                                strftime('%Y%m', event_time)
                         UNION
                         SELECT
                           strftime('%Y%m', event_time) month,
                           0 connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, COUNT(event_time) print_resumed, 0 error
-                        FROM
-                          print_resumed
+                            FROM
+                              print_resumed
+                            GROUP BY 
+                                strftime('%Y%m', event_time)
                         UNION
                         SELECT
                           strftime('%Y%m', event_time) month,
                           0 connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, COUNT(event_time) error
-                        FROM
-                          error
+                            FROM
+                              error
+                            GROUP BY 
+                                strftime('%Y%m', event_time)
                       ) AS tb
                       WHERE
                         NOT month IS NULL
@@ -113,44 +131,58 @@ class StatsDB:
                         SELECT
                           strftime('%H', event_time) hour,
                           COUNT(event_time) connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
-                        FROM
-                          connected
+                            FROM
+                              connected
+                            GROUP BY 
+                                strftime('%H', event_time)
                         UNION
                         SELECT
                           strftime('%H', event_time) hour,
                           0 connected, COUNT(event_time) disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
-                        FROM
-                          disconnected
+                            FROM
+                              disconnected
+                            GROUP BY 
+                                strftime('%H', event_time)
                         UNION
                         SELECT
                           strftime('%H', event_time) hour,
                           0 connected, 0 disconnected, COUNT(event_time) upload, 0 print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
-                        FROM
-                          upload
+                            FROM
+                              upload
+                            GROUP BY 
+                                strftime('%H', event_time)
                         UNION
                         SELECT
                           strftime('%H', event_time) hour,
                           0 connected, 0 disconnected, 0 upload, COUNT(event_time) print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
-                        FROM
-                          print_started
+                            FROM
+                              print_started
+                            GROUP BY 
+                                strftime('%H', event_time)
                         UNION
                         SELECT
                           strftime('%H', event_time) hour,
                           0 connected, 0 disconnected, 0 upload, 0 print_started, COUNT(event_time) print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
-                        FROM
-                          print_cancelled
+                            FROM
+                              print_cancelled
+                            GROUP BY 
+                                strftime('%H', event_time)
                         UNION
                         SELECT
                           strftime('%H', event_time) hour,
                           0 connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, COUNT(event_time) print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
-                        FROM
-                          print_done
+                            FROM
+                              print_done
+                            GROUP BY 
+                                strftime('%H', event_time)
                         UNION
                         SELECT
                           strftime('%H', event_time) hour,
                           0 connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, COUNT(event_time) print_failed, 0 print_paused, 0 print_resumed, 0 error
-                        FROM
-                          print_failed
+                            FROM
+                              print_failed
+                            GROUP BY 
+                                strftime('%H', event_time)
                         UNION
                         SELECT
                           strftime('%H', event_time) hour,
@@ -161,14 +193,18 @@ class StatsDB:
                         SELECT
                           strftime('%H', event_time) hour,
                           0 connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, COUNT(event_time) print_resumed, 0 error
-                        FROM
-                          print_resumed
+                            FROM
+                              print_resumed
+                            GROUP BY 
+                                strftime('%H', event_time)
                         UNION
                         SELECT
                           strftime('%H', event_time) hour,
                           0 connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, COUNT(event_time) error
-                        FROM
-                          error
+                            ROM
+                              error
+                            GROUP BY 
+                                strftime('%H', event_time)
                       ) AS tb
                       WHERE
                         NOT hour IS NULL
