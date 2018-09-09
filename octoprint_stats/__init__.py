@@ -19,7 +19,7 @@ class StatsDB:
     def __init__(self, plugin):
         self.DB_NAME = plugin._settings.global_get_basefolder("logs") + "/octoprint_stats.db"
 
-        # DB
+        # DB              
         conn = sqlite3.connect(self.DB_NAME)
         db = conn.cursor()
 
@@ -33,6 +33,7 @@ class StatsDB:
         db.execute('CREATE TABLE IF NOT EXISTS print_paused(event_time DateTime PRIMARY KEY, file Text, origin Text)')
         db.execute('CREATE TABLE IF NOT EXISTS print_resumed(event_time DateTime PRIMARY KEY, file Text, origin Text)')
         db.execute('CREATE TABLE IF NOT EXISTS error(event_time DateTime PRIMARY KEY, perror Text)')
+        db.execute('CREATE TABLE IF NOT EXISTS versions(time DateTime PRIMARY KEY, version Numeric)')
         db.execute('''CREATE VIEW IF NOT EXISTS fullstat AS
                       SELECT month,
                         SUM(connected) connected, SUM(disconnected) disconnected, SUM(upload) upload, SUM(print_started) print_started,
@@ -204,8 +205,202 @@ class StatsDB:
                         FROM
                           print_failed
                       ) AS tb''')
+        
+        db.execute("INSERT INTO versions (time, version) VALUES ('%s', 0)" % (datetime.datetime.today()))
 
         conn.commit()
+        
+        #DB updates
+        db.execute("SELECT MAX(version) FROM versions")
+        if (db.fetchall()[0][0] < 1):
+            
+            db.execute('DROP VIEW fullstat')
+            db.execute('''CREATE VIEW IF NOT EXISTS fullstat AS
+                      SELECT month,
+                        SUM(connected) connected, SUM(disconnected) disconnected, SUM(upload) upload, SUM(print_started) print_started,
+                        SUM(print_cancelled) print_cancelled, SUM(print_done) print_done, SUM(print_failed) print_failed, SUM(print_paused) print_paused, SUM(print_resumed) print_resumed, SUM(error) error
+                      FROM (
+                        SELECT
+                          strftime('%Y%m', event_time) month,
+                          COUNT(event_time) connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
+                            FROM
+                              connected
+                            GROUP BY 
+                                strftime('%Y%m', event_time)
+                        UNION
+                        SELECT
+                          strftime('%Y%m', event_time) month,
+                          0 connected, COUNT(event_time) disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
+                            FROM
+                              disconnected
+                            GROUP BY 
+                                strftime('%Y%m', event_time)
+                        UNION
+                        SELECT
+                          strftime('%Y%m', event_time) month,
+                          0 connected, 0 disconnected, COUNT(event_time) upload, 0 print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
+                            FROM
+                              upload
+                            GROUP BY 
+                                strftime('%Y%m', event_time)
+                        UNION
+                        SELECT
+                          strftime('%Y%m', event_time) month,
+                          0 connected, 0 disconnected, 0 upload, COUNT(event_time) print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
+                            FROM
+                              print_started
+                            GROUP BY 
+                                strftime('%Y%m', event_time)
+                        UNION
+                        SELECT
+                          strftime('%Y%m', event_time) month,
+                          0 connected, 0 disconnected, 0 upload, 0 print_started, COUNT(event_time) print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
+                            FROM
+                              print_cancelled
+                            GROUP BY 
+                                strftime('%Y%m', event_time)  
+                        UNION
+                        SELECT
+                          strftime('%Y%m', event_time) month,
+                          0 connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, COUNT(event_time) print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
+                            FROM
+                              print_done
+                            GROUP BY 
+                                strftime('%Y%m', event_time)
+                        UNION
+                        SELECT
+                          strftime('%Y%m', event_time) month,
+                          0 connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, COUNT(event_time) print_failed, 0 print_paused, 0 print_resumed, 0 error
+                            FROM
+                              print_failed
+                            GROUP BY 
+                                strftime('%Y%m', event_time)
+                        UNION
+                        SELECT
+                          strftime('%Y%m', event_time) month,
+                          0 connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, 0 print_failed, COUNT(event_time) print_paused, 0 print_resumed, 0 error
+                            FROM
+                              print_paused
+                            GROUP BY 
+                                strftime('%Y%m', event_time)
+                        UNION
+                        SELECT
+                          strftime('%Y%m', event_time) month,
+                          0 connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, COUNT(event_time) print_resumed, 0 error
+                            FROM
+                              print_resumed
+                            GROUP BY 
+                                strftime('%Y%m', event_time)
+                        UNION
+                        SELECT
+                          strftime('%Y%m', event_time) month,
+                          0 connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, COUNT(event_time) error
+                            FROM
+                              error
+                            GROUP BY 
+                                strftime('%Y%m', event_time)
+                      ) AS tb
+                      WHERE
+                        NOT month IS NULL
+                      GROUP BY
+                        month
+                      ORDER BY
+                        month DESC''')
+            
+            db.execute('DROP VIEW hourstat')
+            db.execute('''CREATE VIEW IF NOT EXISTS hourstat AS
+                      SELECT hour,
+                        SUM(connected) connected, SUM(disconnected) disconnected, SUM(upload) upload, SUM(print_started) print_started,
+                        SUM(print_cancelled) print_cancelled, SUM(print_done) print_done, SUM(print_failed) print_failed, SUM(print_paused) print_paused, SUM(print_resumed) print_resumed, SUM(error) error
+                      FROM (
+                        SELECT
+                          strftime('%H', event_time) hour,
+                          COUNT(event_time) connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
+                            FROM
+                              connected
+                            GROUP BY 
+                                strftime('%H', event_time)
+                        UNION
+                        SELECT
+                          strftime('%H', event_time) hour,
+                          0 connected, COUNT(event_time) disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
+                            FROM
+                              disconnected
+                            GROUP BY 
+                                strftime('%H', event_time)
+                        UNION
+                        SELECT
+                          strftime('%H', event_time) hour,
+                          0 connected, 0 disconnected, COUNT(event_time) upload, 0 print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
+                            FROM
+                              upload
+                            GROUP BY 
+                                strftime('%H', event_time)
+                        UNION
+                        SELECT
+                          strftime('%H', event_time) hour,
+                          0 connected, 0 disconnected, 0 upload, COUNT(event_time) print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
+                            FROM
+                              print_started
+                            GROUP BY 
+                                strftime('%H', event_time)
+                        UNION
+                        SELECT
+                          strftime('%H', event_time) hour,
+                          0 connected, 0 disconnected, 0 upload, 0 print_started, COUNT(event_time) print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
+                            FROM
+                              print_cancelled
+                            GROUP BY 
+                                strftime('%H', event_time)
+                        UNION
+                        SELECT
+                          strftime('%H', event_time) hour,
+                          0 connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, COUNT(event_time) print_done, 0 print_failed, 0 print_paused, 0 print_resumed, 0 error
+                            FROM
+                              print_done
+                            GROUP BY 
+                                strftime('%H', event_time)
+                        UNION
+                        SELECT
+                          strftime('%H', event_time) hour,
+                          0 connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, COUNT(event_time) print_failed, 0 print_paused, 0 print_resumed, 0 error
+                            FROM
+                              print_failed
+                            GROUP BY 
+                                strftime('%H', event_time)
+                        UNION
+                        SELECT
+                          strftime('%H', event_time) hour,
+                          0 connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, 0 print_failed, COUNT(event_time) print_paused, 0 print_resumed, 0 error
+                            FROM
+                              print_paused
+                            GROUP BY 
+                                strftime('%H', event_time)
+                        UNION
+                        SELECT
+                          strftime('%H', event_time) hour,
+                          0 connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, COUNT(event_time) print_resumed, 0 error
+                            FROM
+                              print_resumed
+                            GROUP BY 
+                                strftime('%H', event_time)
+                        UNION
+                        SELECT
+                          strftime('%H', event_time) hour,
+                          0 connected, 0 disconnected, 0 upload, 0 print_started, 0 print_cancelled, 0 print_done, 0 print_failed, 0 print_paused, 0 print_resumed, COUNT(event_time) error
+                            FROM
+                              error
+                            GROUP BY 
+                                strftime('%H', event_time)
+                      ) AS tb
+                      WHERE
+                        NOT hour IS NULL
+                      GROUP BY
+                        hour''')            
+            
+            db.execute("INSERT INTO versions (time, version) VALUES ('%s', 1)" % (datetime.datetime.today()))        
+            conn.commit()
+        
         conn.close()
 
     def execute(self, sql):
