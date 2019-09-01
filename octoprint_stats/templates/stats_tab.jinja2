@@ -1,31 +1,45 @@
+<div id="stats_loading" align="center"><img width="76" height="76" src="/plugin/stats/static/img/loading.gif"></div>
+<table>
+  <tr>
+    <td style="vertical-align:top;">
+      <select id="stats_filter">
+        <option selected value="current_year">Current Year</option>
+        <option value="current_month">Current Month</option>
+        <option value="last_month">Last Month</option>
+        <option value="last3_month">Last 3 Months</option>
+        <option value="last6_month">Last 6 Months</option>
+        <option value="last_year">Last Year</option>
+        <option value="last3_year">Last 3 Years</option>
+        <option value="last6_year">Last 6 Years</option>
+      </select>
+    </td>
+    <td style="vertical-align:top;">
+        <a class="btn add-on" id="stats_sendfilter" data-bind="click: statsSendFilter">Filter</a>
+    </td>
+  </tr>
+</table>
+<div id="stats_tab_nodata" style="display:none;" align="center">No Data</div>
+<div id="stats_tab_data" style="display:none;">
 <table cellspacing="0" cellpadding="0" width="100%">
   <tr>
-    <td colspan="2">
-      <h1>{{ _('Printer Statistics') }}</h1>
-    </td>
-  </tr>
-  <tr>
-    <td colspan="2">
+    <td colspan="2" id="td_fullstat">
       <canvas id="canvas_fullstat" class="chart" height="300" width="600"></canvas>
-      <div id="legend_full" class="chart-legend" width="600"></div>
     </td>
   </tr>
   <tr>
-    <td align="center">
-      <h1>{{ _('Per Hour') }}</h1>
-    </td>
-    <td align="center">
-      <h1>{{ _('Prints') }}</h1>
-    </td>
-  </tr>
-  <tr>
-    <td>
+    <td id="td_hourlystat">
       <canvas id="canvas_hourlystat" class="chart" height="300" width="300"></canvas>
-      <div id="legend_hour" class="chart-midlegend" width="300"></div>
     </td>
-    <td>
+    <td id="td_dailystat">
+      <canvas id="canvas_dailystat" class="chart" height="300" width="300"></canvas>
+    </td>
+  </tr>
+  <tr>
+    <td id="td_printstat">
       <canvas id="canvas_printstat" class="chart" height="300" width="300"></canvas>
-      <div id="legend_print" class="chart-midlegend" width="300"></div>
+    </td>
+    <td id="td_timestat">
+      <canvas id="canvas_timestat" class="chart" height="300" width="300"></canvas>
     </td>
   </tr>
 </table>
@@ -33,17 +47,18 @@
 <table cellspacing="0" cellpadding="0" width="100%">
   <tr>
     <td colspan="2">
-      <h1>{{ _('Power Usage') }}</h1>
+      <h3>{{ _('Power Usage') }}</h3>
     </td>
   </tr>
   <tr>
-    <td>
-      <canvas id="canvas_dkwhstat" class="chart" height="300" width="300"></canvas>
-      <div id="legend_dkwh" class="chart-midlegend" width="300"></div>
+    <td colspan="2" id="td_dkwhstat">
+      <canvas id="canvas_dkwhstat" class="chart" height="300" width="600"></canvas>
     </td>
-    <td>
-      <canvas id="canvas_mkwhstat" class="chart" height="300" width="300"></canvas>
-      <div id="legend_mkwh" class="chart-midlegend" width="300"></div>
+  </tr>
+  <tr>
+    <td colspan="2" id="td_mkwhstat">
+      <canvas id="canvas_mkwhstat" class="chart" height="300" width="600"></canvas>
     </td>
   </tr>
 </table>
+</div>

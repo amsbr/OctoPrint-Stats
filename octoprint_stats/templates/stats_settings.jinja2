@@ -1,6 +1,7 @@
+<!-- ko allowBindings: true -->
 <h4>{{ _('Power usage') }}</h4>
 Specify the consumption of your printer in watts.<br />
-<form class="form-horizontal">
+<form id="settings_plugin_stats_form" class="form-horizontal">
     <div class="control-group">
         <label class="control-label">{{ _('PCB Heatbed') }}</label>
         <div class="controls">
@@ -37,4 +38,37 @@ Specify the consumption of your printer in watts.<br />
             </div>
         </div>
     </div>
+
+<h4>{{ _('Show sidebar') }}</h4>
+Specify charts for show in sidebar.<br />
+
+    <div class="control-group">
+        <label class="control-label">{{ _('Day print stats') }}</label>
+        <div class="controls">
+            <div class="input-append">
+                <input type="checkbox" data-bind="checked: settings.plugins.stats.dayprint" id="stats_dayprint">
+            </div>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">{{ _('Day kWh stats') }}</label>
+        <div class="controls">
+            <div class="input-append">
+                <input type="checkbox" data-bind="checked: settings.plugins.stats.daykwh" id="stats_daykwh">
+            </div>
+        </div>
+    </div>
+    <div class="control-group">
+        <label class="control-label">{{ _('Day stats') }}</label>
+        <div class="controls">
+            <div class="input-append">
+                <input type="checkbox" data-bind="checked: settings.plugins.stats.daystats" id="stats_daystats">
+            </div>
+        </div>
+    </div>
+    <div class="control-group">
+        <a title="Remove Stats History" class="btn btn-danger" id="resetStats"><i class="fa fa-trash-o"></i> Remove Stats History</a>
+    </div>
+
 </form>
+<!-- /ko -->
