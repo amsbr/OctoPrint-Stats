@@ -11,7 +11,7 @@ or manually using this URL:
 
 ## Screenshots
 
-![Screenshot 1](http://plugins.octoprint.org/assets/img/plugins/stats/img1.png)
-![Screenshot 2](http://plugins.octoprint.org/assets/img/plugins/stats/img2.png)
-![Screenshot 3](http://plugins.octoprint.org/assets/img/plugins/stats/img3.png)
-![Screenshot 4](http://plugins.octoprint.org/assets/img/plugins/stats/img4.png)
+![Screenshot 1](https://github.com/amsbr/OctoPrint-Stats/raw/master/extras/img1.png)
+![Screenshot 2](https://github.com/amsbr/OctoPrint-Stats/raw/master/extras/img2.png)
+![Screenshot 3](https://github.com/amsbr/OctoPrint-Stats/raw/master/extras/img3.png)
+![Screenshot 4](https://github.com/amsbr/OctoPrint-Stats/raw/master/extras/img4.png)
