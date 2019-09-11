@@ -764,6 +764,9 @@ class StatsPlugin(octoprint.plugin.EventHandlerPlugin,
         """
         Callback for general OctoPrint events.
         """
+        # prevent run of not fully started plugin
+        if not hasattr(self, 'statDB'):
+            return
         
         eventData = None
         if event == octoprint.events.Events.CONNECTED:
