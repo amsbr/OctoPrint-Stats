@@ -372,12 +372,25 @@ class StatsPlugin(octoprint.plugin.EventHandlerPlugin,
             
         return calc
 
+    def formatNum(self, x):
+        try:
+            if x == "NaN":
+                return 0
+            else:
+                return float(x)
+        except Exception:
+            return 0
+    
     def filterEvent(self, event, group, filterp = 'current_year'):
         search = Query()
 
         search_data = (search.event_type == event)
         event_data = self.statDB.getData(self.statDB.query(search_data, 'events'))
         event_df = pd.DataFrame(event_data)
+        
+        if (event == "PRINT_DONE") or (event == "PRINT_CANCELLED") or (event == "PRINT_FAILED"):
+            event_df['ptime'] = event_df['ptime'].apply(self.formatNum)
+        
         if(event_data != []):
             event_df["event_y"] = event_df["event_time"].apply(self.parseYear)
             event_df["event_ym"] = event_df["event_time"].apply(self.parseYearMonth)
