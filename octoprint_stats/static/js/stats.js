@@ -183,6 +183,15 @@ $(function () {
                     self.requestData();
                 }, 30000)
             }
+
+            if (statsidedata) {
+                $("#stats_side_data").show();
+                $("#stats_side_nodata").hide();
+            } else {
+                $("#stats_side_data").hide();
+                $("#stats_side_nodata").show();
+            }
+
             $("#sidestats_loading").hide();
         }
 
