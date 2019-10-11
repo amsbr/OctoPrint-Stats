@@ -232,18 +232,20 @@ class StatsPlugin(octoprint.plugin.EventHandlerPlugin,
         self.todayStatDataset = []
         self.todaykWhDataset = []
 
-        self.refreshFull(filter_param=self.current_filter)
-        self.refreshHour(filter_param=self.current_filter)
-        self.refreshDay(filter_param=self.current_filter)
-        self.refreshPrint(filter_param=self.current_filter)
-        self.refreshTime(filter_param=self.current_filter)
-        self.refreshWatts(filter_param=self.current_filter)
+        #self.refreshFull(filter_param=self.current_filter)
+        #self.refreshHour(filter_param=self.current_filter)
+        #self.refreshDay(filter_param=self.current_filter)
+        #self.refreshPrint(filter_param=self.current_filter)
+        #self.refreshTime(filter_param=self.current_filter)
+        #self.refreshWatts(filter_param=self.current_filter)
 
-        self.refreshSidePrint()
-        self.refreshSideDay()
-        self.refreshSidekWh()
+        #self.refreshSidePrint()
+        #self.refreshSideDay()
+        #self.refreshSidekWh()
 
     def get_settings_defaults(self):
+        # Default autorefresh false
+        
         return dict(
           pcbheatbed="98.5",
           hotend="32.5",
@@ -251,7 +253,8 @@ class StatsPlugin(octoprint.plugin.EventHandlerPlugin,
           eletronics="11.3",
           daystats=False,
           daykwh=False,
-          dayprint=False
+          dayprint=False,
+          autorefresh=False
           )
 
     def get_template_configs(self):
@@ -774,9 +777,17 @@ class StatsPlugin(octoprint.plugin.EventHandlerPlugin,
             self._plugin_manager.send_plugin_message(self._identifier, dict(todaykWhDataset=[]))
 
     def on_event(self, event, payload):
-        """
-        Callback for general OctoPrint events.
-        """
+        # Prevent run at only supported Events
+        supportedEvents = [octoprint.events.Events.CONNECTED, octoprint.events.Events.DISCONNECTED, octoprint.events.Events.UPLOAD,
+                           octoprint.events.Events.PRINT_STARTED, octoprint.events.Events.PRINT_DONE, octoprint.events.Events.PRINT_FAILED,
+                           octoprint.events.Events.PRINT_CANCELLED, octoprint.events.Events.PRINT_PAUSED, octoprint.events.Events.PRINT_RESUMED,
+                           octoprint.events.Events.ERROR]
+        
+        if not event in supportedEvents:
+            return
+        
+        self._logger.info("Printer Stats - on_event")
+
         # prevent run of not fully started plugin
         if not hasattr(self, 'statDB'):
             return
@@ -966,17 +977,20 @@ class StatsPlugin(octoprint.plugin.EventHandlerPlugin,
         if eventData != None:
             self.statDB.execute(eventData, 'events')
             
-            self.refreshFull(filter_param=self.current_filter)
-            self.refreshHour(filter_param=self.current_filter)
-            self.refreshDay(filter_param=self.current_filter)
-            self.refreshPrint(filter_param=self.current_filter)
-            self.refreshTime(filter_param=self.current_filter)
-            self.refreshWatts(filter_param=self.current_filter)
+            
+            # Disabled refresh at all events for reduce CPU usage
+            
+            #self.refreshFull(filter_param=self.current_filter)
+            #self.refreshHour(filter_param=self.current_filter)
+            #self.refreshDay(filter_param=self.current_filter)
+            #self.refreshPrint(filter_param=self.current_filter)
+            #self.refreshTime(filter_param=self.current_filter)
+            #self.refreshWatts(filter_param=self.current_filter)
             
             # Side
-            self.refreshSidePrint()
-            self.refreshSideDay()
-            self.refreshSidekWh()
+            #self.refreshSidePrint()
+            #self.refreshSideDay()
+            #self.refreshSidekWh()
 
     ##~~ Softwareupdate hook
     def get_update_information(self):
@@ -1001,7 +1015,7 @@ class StatsPlugin(octoprint.plugin.EventHandlerPlugin,
 # ("OctoPrint-PluginSkeleton"), you may define that here. Same goes for the other metadata derived from setup.py that
 # can be overwritten via __plugin_xyz__ control properties. See the documentation for that.
 __plugin_name__ = "Printer Stats"
-__plugin_version__ = "2.0.0"
+__plugin_version__ = "2.0.2"
 __plugin_description__ = "Statistics of your 3D Printer"
 
 def __plugin_load__():
