@@ -392,7 +392,10 @@ class StatsPlugin(octoprint.plugin.EventHandlerPlugin,
         event_df = pd.DataFrame(event_data)
         
         if (event == "PRINT_DONE") or (event == "PRINT_CANCELLED") or (event == "PRINT_FAILED"):
-            event_df['ptime'] = event_df['ptime'].apply(self.formatNum)
+            if 'ptime' in event_df:
+                event_df['ptime'] = event_df['ptime'].apply(self.formatNum)
+            else:
+                event_df['ptime'] = 0
         
         if(event_data != []):
             event_df["event_y"] = event_df["event_time"].apply(self.parseYear)
