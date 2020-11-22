@@ -1,4 +1,4 @@
-THIS REPOSITORY WAS DEPRECATED. Please use repository of new mantainer https://github.com/AlexVerrico/octoprint-stats
+THIS REPOSITORY WAS DEPRECATED. Please use repository of new maintainer https://github.com/AlexVerrico/octoprint-stats
 
 
 # OctoPrint-Stats
